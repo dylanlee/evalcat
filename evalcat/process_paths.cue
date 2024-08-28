@@ -4,9 +4,8 @@ import (
 	"strings"
 	"path"
 	"regexp"
+	"list"
 )
-
-_filepaths: [...string]
 
 //output lists of versions sources and a magnitude object for eval scripts
 fimVersions: ["fim_4_4_0_0", "fim_4_5_2_11"]
@@ -44,142 +43,94 @@ magnitudes: {
 	...
 }
 
-// BEGIN PATH LIST PROCESSING
-// Define the result as a list of structs
-_result: [
-	for _filepath in _filepaths {
-		let ver = #GetVer & {_in: {pattern: "hand_fim", path: _filepath}}
-		let name = path.Base(_filepath)
-		let hucstring = strings.Split(regexp.FindAll(#catchmentid_filter, _filepath, -1)[0], "/")[1]
-		let branchstring = strings.Split(regexp.FindAll(#catchmentid_filter, _filepath, -1)[1], "/")[1]
-		if (#HandRem & {filename: name}) != _|_ {
-			rem:
-				#HandRem & {
+#ProcessFiles: {
+	filepaths: [...string]
+	schema: _
+	output: [for filepath in filepaths
+		let ver = #GetVer & {_in: {pattern: "hand_fim", path: filepath}}
+		let name = path.Base(filepath)
+		if (schema & {filename: name}) != _|_ {
+			if list.Contains(schema.output_of, "hand") && regexp.FindAll(#catchmentid_filter, filepath, -1) != _|_ {
+				let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
+				if len(hucMatches) == 2 {
+					let hucstring = strings.Split(hucMatches[0], "/")[1]
+					let branchstring = strings.Split(hucMatches[1], "/")[1]
+					schema & {
+						filename:     name
+						huc:          hucstring
+						branch:       branchstring
+						data_version: ver.data_version
+					}
+				}
+				if len(hucMatches) == 1 {
+					let hucstring = strings.Split(hucMatches[0], "/")[1]
+					schema & {
+						filename:     name
+						huc:          hucstring
+						data_version: ver.data_version
+					}
+				}
+				schema & {
 					filename:     name
-					huc:          hucstring
-					branch:       branchstring
 					data_version: ver.data_version
 				}
-		}
-		if (#HydroTable & {filename: name}) != _|_ {
-			hydroTable:
-				#HydroTable & {
-					filename:     name
-					huc:          hucstring
-					branch:       branchstring
-					data_version: ver.data_version
+			}
+			if list.Contains(schema.input_to, "eval") {
+				schema & {
+					filename: name
 				}
-		}
-		if (#ReachRaster & {filename: name}) != _|_ {
-			reachRaster: #ReachRaster & {
-				filename:     name
-				huc:          hucstring
-				branch:       branchstring
-				data_version: ver.data_version
 			}
-		}
 
-		if (#ReachAttributes & {filename: name}) != _|_ {
-			reachAttribute: #ReachAttributes & {
-				filename:     name
-				huc:          hucstring
-				branch:       branchstring
-				data_version: ver.data_version
-			}
-		}
-		if name == #Huc8Shape.filename {
-			huc8Shape: #Huc8Shape & {
-				filename:     name
-				huc:          hucstring
-				data_version: ver.data_version
-			}
-		}
-		if name == #HucBranchMap.filename {
-			hucBranchMap: #HucBranchMap & {
-				filename:     name
-				data_version: ver.data_version
-			}
-		}
-
-		if (#VectorMasks & {filename: name}) != _|_ {
-			vectorMask: #VectorMasks & {
-				filename: name
-			}
-		}
-
-		if (#WbdNational & {filename: name}) != _|_ {
-			wbdNational: #WbdNational & {
-				filename: name
-			}
-		}
-		if (#EvalMetrics & {filename: name}) != _|_ {
-			evalMetric: #EvalMetrics & {
-				filename: name
-			}
-		}
-		if (#AgreementMap & {filename: name}) != _|_ {
-			//need to extract version from eval pathing with a different split string 
-			let eval_ver = #GetVer & {_in: {pattern: "versions", path: _filepath}}
-			agreementMap: #AgreementMap & {
-				filename: name
-				huc:      hucstring
-				dates: {start: "2006-01-02"
-					end: "2006-01-03"
+			//added this condition for individual huc8 wbd data
+			if list.Contains(schema.data_roles, "model_boundary") {
+				schema & {
+					filename: name
 				}
-				version_env:  "official"
-				data_version: eval_ver.data_version
 			}
-		}
-	},
-]
+		},
+	]
+}
 
-// Flatten the list of lists into multiple lists. One containing all the hand_rem structs called "hand_rem" another containing all the hydrotable structs
-hydroTables: [
-	for x in _result
-	if x.hydroTable != _|_ {x.hydroTable},
-]
+_handRems: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #HandRem
+}
 
-rems: [
-	for x in _result
-	if x.rem != _|_ {x.rem},
-]
+_hydroTables: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #HydroTable
+}
 
-reachRasters: [
-	for x in _result
-	if x.reachRaster != _|_ {x.reachRaster},
-]
+_reachRasters: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #ReachRaster
+}
 
-reachAttributes: [
-	for x in _result
-	if x.reachAttribute != _|_ {x.reachAttribute},
-]
+_reachAttributes: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #ReachAttributes
+}
 
-huc8Shapes: [
-	for x in _result
-	if x.huc8Shape != _|_ {x.huc8Shape},
-]
+_huc8Shapes: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #Huc8Shape
+}
 
-hucBranchMaps: [
-	for x in _result
-	if x.hucBranchMap != _|_ {x.hucBranchMap},
-]
+_hucBranchMaps: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #HucBranchMap
+}
 
-vectorMasks: [
-	for x in _result
-	if x.vectorMask != _|_ {x.vectorMask},
-]
+_vectorMasks: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #VectorMasks
+}
 
-wbdNational: [
-	for x in _result
-	if x.wbdNational != _|_ {x.wbdNational},
-]
-
-evalMetrics: [
-	for x in _result
-	if x.evalMetric != _|_ {x.evalMetric},
-]
-
-agreementMaps: [
-	for x in _result
-	if x.agreementMap != _|_ {x.agreementMap},
-]
+// Output the processed files
+handRems:        _handRems.output
+hydroTables:     _hydroTables.output
+reachRasters:    _reachRasters.output
+reachAttributes: _reachAttributes.output
+huc8Shapes:      _huc8Shapes.output
+hucBranchMaps:   _hucBranchMaps.output
+vectorMasks:     _vectorMasks.output

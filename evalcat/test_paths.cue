@@ -1,6 +1,6 @@
 package evalcat
 
-_filepaths: [
+_evalpaths: [
 	"hand_fim/fim_4_4_0_0/01010002/branches/7170000001/rem_zeroed_masked_7170000001.tif",
 	"hand_fim/fim_4_4_0_0/01010004/branches/1661000009/rem_zeroed_masked_1661000009.tif",
 	"hand_fim/fim_4_4_0_0/01010002/branches/0/hydroTable_0.csv",
@@ -16,7 +16,7 @@ _filepaths: [
 	"hand_fim/inputs/nld_vectors/Levee_protected_areas.gpkg",
 	"hand_fim/inputs/nwm_hydrofabric/nwm_lakes.gpkg",
 	"hand_fim/inputs/wbd/WBD_National.gpkg",
-	"hand_fim/metrics/eval_metrics.csv",
-	"hand_fim/testy_cases/ble_test_cases/08040101/official_versions/fim_4_4_0_0/100yr/total_area_agreement.tif",
-	"hand_fim/testy_cases/usgs_test_cases/01090005/official_versions/fim_4_4_0_0/action/wstr1_b0m_agreement.tif",
+	// "hand_fim/metrics/eval_metrics.csv",
+	// "hand_fim/testy_cases/ble_test_cases/08040101/official_versions/fim_4_4_0_0/100yr/total_area_agreement.tif",
+	// "hand_fim/testy_cases/usgs_test_cases/01090005/official_versions/fim_4_4_0_0/action/wstr1_b0m_agreement.tif",
 ]

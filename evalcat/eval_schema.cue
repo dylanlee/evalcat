@@ -99,6 +99,7 @@ InsOuts: {
 #VectorMasks: {
 	filename: string & =~".*(?:Levee_protected_areas|nwm_lakes\\.gpkg).*" //_filenamePattern
 	input_to: ["eval", "hand"]
+	output_of: []
 	data_roles: ["mask"]
 	dir_path: path.Join([
 		InsOuts.hand_in,
@@ -116,6 +117,7 @@ InsOuts: {
 #WbdNational: {
 	filename: "WBD_National.gpkg"
 	input_to: ["eval", "hand"]
+	output_of: []
 	data_roles: ["model_boundary"]
 	dir_path: path.Join([InsOuts.hand_in, "inputs", "wbd"], path.Unix)
 }
