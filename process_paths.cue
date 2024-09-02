@@ -96,41 +96,41 @@ _handRems: #ProcessFiles & {
 	schema:    #HandRem
 }
 
-_hydroTables: #ProcessFiles & {
-	filepaths: _evalpaths
-	schema:    #HydroTable
-}
+// _hydroTables: #ProcessFiles & {
+// 	filepaths: _evalpaths
+// 	schema:    #HydroTable
+// }
 
-_reachRasters: #ProcessFiles & {
-	filepaths: _evalpaths
-	schema:    #ReachRaster
-}
+// _reachRasters: #ProcessFiles & {
+// 	filepaths: _evalpaths
+// 	schema:    #ReachRaster
+// }
 
-_reachAttributes: #ProcessFiles & {
-	filepaths: _evalpaths
-	schema:    #ReachAttributes
-}
+// _reachAttributes: #ProcessFiles & {
+// 	filepaths: _evalpaths
+// 	schema:    #ReachAttributes
+// }
 
-_huc8Shapes: #ProcessFiles & {
-	filepaths: _evalpaths
-	schema:    #Huc8Shape
-}
+// _huc8Shapes: #ProcessFiles & {
+// 	filepaths: _evalpaths
+// 	schema:    #Huc8Shape
+// }
 
-_hucBranchMaps: #ProcessFiles & {
-	filepaths: _evalpaths
-	schema:    #HucBranchMap
-}
+// _hucBranchMaps: #ProcessFiles & {
+// 	filepaths: _evalpaths
+// 	schema:    #HucBranchMap
+// }
 
-_vectorMasks: #ProcessFiles & {
-	filepaths: _evalpaths
-	schema:    #VectorMasks
-}
+// _vectorMasks: #ProcessFiles & {
+// 	filepaths: _evalpaths
+// 	schema:    #VectorMasks
+// }
 
-// Output the processed files
-handRems:        _handRems.output
-hydroTables:     _hydroTables.output
-reachRasters:    _reachRasters.output
-reachAttributes: _reachAttributes.output
-huc8Shapes:      _huc8Shapes.output
-hucBranchMaps:   _hucBranchMaps.output
-vectorMasks:     _vectorMasks.output
+// // Output the processed files
+handRems: _handRems.output
+// hydroTables:     _hydroTables.output
+// reachRasters:    _reachRasters.output
+// reachAttributes: _reachAttributes.output
+// huc8Shapes:      _huc8Shapes.output
+// hucBranchMaps:   _hucBranchMaps.output
+// vectorMasks:     _vectorMasks.output
