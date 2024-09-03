@@ -42,7 +42,7 @@ magnitudes: {
 	...
 }
 
-Process HandRems
+// Process HandRems
 handRems: [...] & [
 	for filepath in _evalpaths
 	let ver = #GetVer & {_in: {pattern: "hand_fim", path: filepath}}
