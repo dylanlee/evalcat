@@ -4,7 +4,6 @@ import (
 	"strings"
 	"path"
 	"regexp"
-	"list"
 )
 
 //output lists of versions sources and a magnitude object for eval scripts
@@ -43,94 +42,79 @@ magnitudes: {
 	...
 }
 
-#ProcessFiles: {
-	filepaths: [...string]
-	schema: _
-	output: [for filepath in filepaths
-		let ver = #GetVer & {_in: {pattern: "hand_fim", path: filepath}}
-		let name = path.Base(filepath)
-		if (schema & {filename: name}) != _|_ {
-			if list.Contains(schema.output_of, "hand") && regexp.FindAll(#catchmentid_filter, filepath, -1) != _|_ {
-				let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
-				if len(hucMatches) == 2 {
-					let hucstring = strings.Split(hucMatches[0], "/")[1]
-					let branchstring = strings.Split(hucMatches[1], "/")[1]
-					schema & {
-						filename:     name
-						huc:          hucstring
-						branch:       branchstring
-						data_version: ver.data_version
-					}
-				}
-				if len(hucMatches) == 1 {
-					let hucstring = strings.Split(hucMatches[0], "/")[1]
-					schema & {
-						filename:     name
-						huc:          hucstring
-						data_version: ver.data_version
-					}
-				}
-				schema & {
-					filename:     name
-					data_version: ver.data_version
-				}
+Process HandRems
+handRems: [...] & [
+	for filepath in _evalpaths
+	let ver = #GetVer & {_in: {pattern: "hand_fim", path: filepath}}
+	let name = path.Base(filepath)
+	if (#HandRem & {filename: name}) != _|_ {
+		let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
+		if len(hucMatches) >= 2 {
+			let hucstring = strings.Split(hucMatches[0], "/")[1]
+			let branchstring = strings.Split(hucMatches[1], "/")[1]
+			#HandRem & {
+				filename:     name
+				huc:          hucstring
+				branch:       branchstring
+				data_version: ver.data_version
 			}
-			if list.Contains(schema.input_to, "eval") {
-				schema & {
-					filename: name
-				}
+		}
+	},
+]
+
+hydroTables: [...] & [
+	for filepath in _evalpaths
+	let ver = #GetVer & {_in: {pattern: "hand_fim", path: filepath}}
+	let name = path.Base(filepath)
+	if (#HydroTable & {filename: name}) != _|_ {
+		let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
+		if len(hucMatches) >= 2 {
+			let hucstring = strings.Split(hucMatches[0], "/")[1]
+			let branchstring = strings.Split(hucMatches[1], "/")[1]
+			#HydroTable & {
+				filename:     name
+				huc:          hucstring
+				branch:       branchstring
+				data_version: ver.data_version
 			}
+		}
+	},
+]
 
-			//added this condition for individual huc8 wbd data
-			if list.Contains(schema.data_roles, "model_boundary") {
-				schema & {
-					filename: name
-				}
+reachRasters: [...] & [
+	for filepath in _evalpaths
+	let ver = #GetVer & {_in: {pattern: "hand_fim", path: filepath}}
+	let name = path.Base(filepath)
+	if (#ReachRaster & {filename: name}) != _|_ {
+		let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
+		if len(hucMatches) >= 2 {
+			let hucstring = strings.Split(hucMatches[0], "/")[1]
+			let branchstring = strings.Split(hucMatches[1], "/")[1]
+			#ReachRaster & {
+				filename:     name
+				huc:          hucstring
+				branch:       branchstring
+				data_version: ver.data_version
 			}
-		},
-	]
-}
+		}
+	},
+]
 
-_handRems: #ProcessFiles & {
-	filepaths: _evalpaths
-	schema:    #HandRem
-}
-
-// _hydroTables: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #HydroTable
-// }
-
-// _reachRasters: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #ReachRaster
-// }
-
-// _reachAttributes: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #ReachAttributes
-// }
-
-// _huc8Shapes: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #Huc8Shape
-// }
-
-// _hucBranchMaps: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #HucBranchMap
-// }
-
-// _vectorMasks: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #VectorMasks
-// }
-
-// // Output the processed files
-handRems: _handRems.output
-// hydroTables:     _hydroTables.output
-// reachRasters:    _reachRasters.output
-// reachAttributes: _reachAttributes.output
-// huc8Shapes:      _huc8Shapes.output
-// hucBranchMaps:   _hucBranchMaps.output
-// vectorMasks:     _vectorMasks.output
+reachAttributes: [...] & [
+	for filepath in _evalpaths
+	let ver = #GetVer & {_in: {pattern: "hand_fim", path: filepath}}
+	let name = path.Base(filepath)
+	if (#ReachAttributes & {filename: name}) != _|_ {
+		let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
+		if len(hucMatches) >= 2 {
+			let hucstring = strings.Split(hucMatches[0], "/")[1]
+			let branchstring = strings.Split(hucMatches[1], "/")[1]
+			#ReachAttributes & {
+				filename:     name
+				huc:          hucstring
+				branch:       branchstring
+				data_version: ver.data_version
+			}
+		}
+	},
+]

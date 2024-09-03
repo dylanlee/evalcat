@@ -72,10 +72,10 @@ command: {
 				"cue cmd processHandRems && " +
 				"cue cmd processHydroTables && " +
 				"cue cmd processReachRasters && " +
-				"cue cmd processReachAttributes && " +
-				"cue cmd processHuc8Shapes && " +
-				"cue cmd processHucBranchMaps && " +
-				"cue cmd processVectorMasks",
+				"cue cmd processReachAttributes",
+				// "cue cmd processHuc8Shapes && " +
+				// "cue cmd processHucBranchMaps && " +
+				// "cue cmd processVectorMasks",
 			]
 		}
 	}
