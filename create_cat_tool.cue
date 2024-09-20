@@ -11,7 +11,7 @@ import (
 	run: exec.Run & {
 		cmd: ["cue", "export",
 			"eval_schema.cue",
-			"esip_paths.cue",
+			"test_oe_paths.cue",
 			"process_paths.cue",
 			"-e", output]
 		stdout: string

@@ -7,14 +7,6 @@ import (
 	"list"
 )
 
-//output lists of versions sources and a magnitude object for eval scripts
-fimVersions: ["fim_4_4_0_0", "fim_4_5_2_11"]
-benchmarkSources: ["ble", "usgs", "nws", "hwm", "gfm"]
-magnitudes: {
-	ble: ["100yr", "500yr"]
-	ahps: ["action", "minor", "moderate", "major"]
-}
-
 // BEGIN REGEXP PATTERN DEFINITIONS
 // This pattern matches any sequence of digits between forward slashes
 #catchmentid_filter: "/([0-9]+)/"
@@ -47,7 +39,7 @@ magnitudes: {
 	filepaths: [...string]
 	schema: _
 	output: [for filepath in filepaths
-		let ver = #GetVer & {_in: {pattern: "hand_fim", path: filepath}}
+		let ver = #GetVer & {_in: {pattern: "outputs", path: filepath}}
 		let name = path.Base(filepath)
 		if (schema & {filename: name}) != _|_ {
 			if list.Contains(schema.output_of, "hand") && regexp.FindAll(#catchmentid_filter, filepath, -1) != _|_ {
@@ -126,7 +118,7 @@ _handRems: #ProcessFiles & {
 // 	schema:    #VectorMasks
 // }
 
-// // Output the processed files
+// Output the processed files
 handRems: _handRems.output
 // hydroTables:     _hydroTables.output
 // reachRasters:    _reachRasters.output

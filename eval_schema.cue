@@ -5,14 +5,14 @@ import "path"
 import "time"
 
 // Top-level pathing
-InsOuts: {
+_InsOuts: {
 	eval_out: string & "fimc-data/hand_fim/"
 	hand_in:  string & "noaa-nws-owp-fim/hand_fim/inputs/"
 	hand_out: string & "noaa-nws-owp-fim/hand_fim/"
 }
 
 // List of FIM output versions
-#FimVersions: string & "fim_4_4_0_0" | *"fim_4_5_2_11"
+#FimVersions: string & "fim_4_4_0_0" | "PI3_fim60_10m_wbt" | *"fim_4_5_2_11"
 
 // Benchmark sources
 #BenchmarkSources: string & "ble" | *"usgs" | "nws" | "hwm" | "gfm"
@@ -37,7 +37,7 @@ InsOuts: {
 	data_roles: ["rem"]
 	huc:    string & =~"^[0-9]+$"
 	branch: string & =~"^[0-9]+$"
-	dir_path: "s3://" + path.Join([InsOuts.hand_out, data_version, huc, "branches", branch], path.Unix)
+	dir_path: "s3://" + path.Join([_InsOuts.hand_out, data_version, huc, "branches", branch], path.Unix)
 }
 
 // Hydrotable
@@ -49,7 +49,7 @@ InsOuts: {
 	data_roles: ["channel_geometry", "rating_curve"]
 	huc:    string & =~"^[0-9]+$"
 	branch: string & =~"^[0-9]+$"
-	dir_path: "s3://" + path.Join([InsOuts.hand_out, data_version, huc, "branches", branch], path.Unix)
+	dir_path: "s3://" + path.Join([_InsOuts.hand_out, data_version, huc, "branches", branch], path.Unix)
 }
 
 // reach raster
@@ -61,7 +61,7 @@ InsOuts: {
 	data_roles: ["pixel_mapped_reach"]
 	huc:    string & =~"^[0-9]+$"
 	branch: string & =~"^[0-9]+$"
-	dir_path: "s3://" + path.Join([InsOuts.hand_out, data_version, huc, "branches", branch], path.Unix)
+	dir_path: "s3://" + path.Join([_InsOuts.hand_out, data_version, huc, "branches", branch], path.Unix)
 }
 
 #ReachAttributes: {
@@ -72,7 +72,7 @@ InsOuts: {
 	data_roles: ["cross_walked_reach"]
 	huc:    string & =~"^[0-9]+$"
 	branch: string & =~"^[0-9]+$"
-	dir_path: "s3://" + path.Join([InsOuts.hand_out, data_version, huc, "branches", branch], path.Unix)
+	dir_path: "s3://" + path.Join([_InsOuts.hand_out, data_version, huc, "branches", branch], path.Unix)
 }
 
 #Huc8Shape: {
@@ -82,7 +82,7 @@ InsOuts: {
 	data_version: #FimVersions
 	data_roles: ["model_boundary"]
 	huc: string & =~"^[0-9]+$"
-	dir_path: "s3://" + path.Join([InsOuts.hand_out, data_version, huc], path.Unix)
+	dir_path: "s3://" + path.Join([_InsOuts.hand_out, data_version, huc], path.Unix)
 }
 
 // HUC branch table
@@ -92,7 +92,7 @@ InsOuts: {
 	output_of: ["hand"]
 	data_version: #FimVersions
 	data_roles: ["branch_lookup"]
-	dir_path: "s3://" + path.Join([InsOuts.hand_out, data_version], path.Unix)
+	dir_path: "s3://" + path.Join([_InsOuts.hand_out, data_version], path.Unix)
 }
 
 // Vector masks
@@ -102,7 +102,7 @@ InsOuts: {
 	output_of: []
 	data_roles: ["mask"]
 	dir_path: "s3://" + path.Join([
-		InsOuts.hand_in,
+		_InsOuts.hand_in,
 		"inputs",
 		if filename == "Levee_protected_areas.gpkg" {
 			"nld_vectors"
@@ -119,7 +119,7 @@ InsOuts: {
 	input_to: ["eval", "hand"]
 	output_of: []
 	data_roles: ["model_boundary"]
-	dir_path: "s3://" + path.Join([InsOuts.hand_in, "inputs", "wbd"], path.Unix)
+	dir_path: "s3://" + path.Join([_InsOuts.hand_in, "inputs", "wbd"], path.Unix)
 }
 
 // Metric CSV file
@@ -127,7 +127,7 @@ InsOuts: {
 	filename: =~".*metrics.csv$"
 	output_of: ["eval"]
 	data_roles: ["model_evaluation"]
-	dir_path: "s3://" + path.Join([InsOuts.eval_out, "metrics"], path.Unix)
+	dir_path: "s3://" + path.Join([_InsOuts.eval_out, "metrics"], path.Unix)
 }
 
 // Agreement map
@@ -146,7 +146,7 @@ InsOuts: {
 	version_env:  "official" | "testing"
 	output_of: ["eval"]
 	dir_path: "s3://" + path.Join([
-		InsOuts.eval_out,
+		_InsOuts.eval_out,
 		"testy_cases",
 		benchmark_source + "_test_cases",
 		huc,
@@ -177,7 +177,7 @@ InsOuts: {
 	version_env:  "official" | "testing"
 	output_of: ["eval"]
 	dir_path: "s3://" + path.Join([
-		InsOuts.eval_out,
+		_InsOuts.eval_out,
 		"testy_cases",
 		benchmark_source + "_test_cases",
 		huc,
