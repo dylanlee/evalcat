@@ -6,12 +6,13 @@ import (
 )
 
 #process: {
-	output:  string
-	outFile: string
+	batchNumber: int & >=0 | *0
+	output:      string
+	outFile:     string
 	run: exec.Run & {
 		cmd: ["cue", "export",
 			"eval_schema.cue",
-			"esip_paths.cue",
+			"OE_eval_cat_paths.cue",
 			"process_paths.cue",
 			"-e", output]
 		stdout: string
@@ -31,69 +32,68 @@ import (
 command: {
 	processHandRems: #process & {
 		output:  "handRems"
-		outFile: "handRems.json"
+		outFile: "output/handRems_batch\(batchNumber).json"
 	}
+	// processHydroTables: #process & {
+	// 	output:  "hydroTables"
+	// 	outFile: "hydroTables.json"
+	// }
 
-	processHydroTables: #process & {
-		output:  "hydroTables"
-		outFile: "hydroTables.json"
-	}
+	// processReachRasters: #process & {
+	// 	output:  "reachRasters"
+	// 	outFile: "reachRasters.json"
+	// }
 
-	processReachRasters: #process & {
-		output:  "reachRasters"
-		outFile: "reachRasters.json"
-	}
+	// processReachAttributes: #process & {
+	// 	output:  "reachAttributes"
+	// 	outFile: "reachAttributes.json"
+	// }
 
-	processReachAttributes: #process & {
-		output:  "reachAttributes"
-		outFile: "reachAttributes.json"
-	}
+	// processHuc8Shapes: #process & {
+	// 	output:  "huc8Shapes"
+	// 	outFile: "huc8Shapes.json"
+	// }
 
-	processHuc8Shapes: #process & {
-		output:  "huc8Shapes"
-		outFile: "huc8Shapes.json"
-	}
+	// processHucBranchMaps: #process & {
+	// 	output:  "hucBranchMaps"
+	// 	outFile: "hucBranchMaps.json"
+	// }
 
-	processHucBranchMaps: #process & {
-		output:  "hucBranchMaps"
-		outFile: "hucBranchMaps.json"
-	}
+	// processVectorMasks: #process & {
+	// 	output:  "vectorMasks"
+	// 	outFile: "vectorMasks.json"
+	// }
 
-	processVectorMasks: #process & {
-		output:  "vectorMasks"
-		outFile: "vectorMasks.json"
-	}
+	// // Add a command to run all processes
+	// processAll: {
+	// 	runAll: exec.Run & {
+	// 		cmd: [
+	// 			"sh", "-c",
+	// 			"cue cmd processHandRems && " +
+	// 			"cue cmd processHydroTables && " +
+	// 			"cue cmd processReachRasters && " +
+	// 			"cue cmd processReachAttributes",
+	// 			// "cue cmd processHuc8Shapes && " +
+	// 			// "cue cmd processHucBranchMaps && " +
+	// 			// "cue cmd processVectorMasks",
+	// 		]
+	// 	}
+	// }
 
-	// Add a command to run all processes
-	processAll: {
-		runAll: exec.Run & {
-			cmd: [
-				"sh", "-c",
-				"cue cmd processHandRems && " +
-				"cue cmd processHydroTables && " +
-				"cue cmd processReachRasters && " +
-				"cue cmd processReachAttributes",
-				// "cue cmd processHuc8Shapes && " +
-				// "cue cmd processHucBranchMaps && " +
-				// "cue cmd processVectorMasks",
-			]
-		}
-	}
+	// // Add a command to combine specific JSON files
+	// combineResults: {
+	// 	run: exec.Run & {
+	// 		cmd: [
+	// 			"sh",
+	// 			"-c",
+	// 			"jq -s 'reduce .[] as $item ({}; . * $item)' handRems.json hydroTables.json reachRasters.json reachAttributes.json huc8Shapes.json hucBranchMaps.json vectorMasks.json",
+	// 		]
+	// 		stdout: string
+	// 	}
 
-	// Add a command to combine specific JSON files
-	combineResults: {
-		run: exec.Run & {
-			cmd: [
-				"sh",
-				"-c",
-				"jq -s 'reduce .[] as $item ({}; . * $item)' handRems.json hydroTables.json reachRasters.json reachAttributes.json huc8Shapes.json hucBranchMaps.json vectorMasks.json",
-			]
-			stdout: string
-		}
-
-		write: file.Create & {
-			filename: "combined_results.json"
-			contents: run.stdout
-		}
-	}
+	// 	write: file.Create & {
+	// 		filename: "combined_results.json"
+	// 		contents: run.stdout
+	// 	}
+	// }
 }
