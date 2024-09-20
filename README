@@ -1,0 +1,2 @@
+# Paths 
+Paths to be processed are stored in the "paths" directory. If you are not working with a set of paths change the suffix of the file to ".txt" to avoid confusing cue. If you are working with the paths then change the path file you are using to ".cue" and move it to the main directory (still figuring out subpathing)
