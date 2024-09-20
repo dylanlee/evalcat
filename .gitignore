@@ -1,3 +1,4 @@
 *.json
 esip_paths.cue
+/paths
 
