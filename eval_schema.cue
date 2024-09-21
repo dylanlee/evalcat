@@ -12,7 +12,7 @@ InsOuts: {
 }
 
 // List of FIM output versions
-#FimVersions: string & "fim_4_4_0_0" | *"fim_4_5_2_11"
+#FimVersions: string & "fim_4_4_0_0" | *"fim_4_5_2_11" | "PI3_fim60_10m_wbt"
 
 // Benchmark sources
 #BenchmarkSources: string & "ble" | *"usgs" | "nws" | "hwm" | "gfm"

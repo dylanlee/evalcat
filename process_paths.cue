@@ -7,14 +7,6 @@ import (
 	"math"
 )
 
-//output lists of versions sources and a magnitude object for eval scripts
-fimVersions: ["fim_4_4_0_0", "fim_4_5_2_11", "PI3_fim60_10m_wbt"]
-benchmarkSources: ["ble", "usgs", "nws", "hwm", "gfm"]
-magnitudes: {
-	ble: ["100yr", "500yr"]
-	ahps: ["action", "minor", "moderate", "major"]
-}
-
 // Define batch parameters
 batchSize:   int & >0 | *10000 // Default batch size of 10,000
 batchNumber: int & >=0 | *0    @tag(batchNumber,type="int")
