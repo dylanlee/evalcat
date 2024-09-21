@@ -21,25 +21,11 @@ import (
 // generic output for your function outputs
 #Output: string
 
-#GetVer: {
-	_in:          #Input
-	data_version: #Output
-
-	// Intermediate fields
-	_splitPath:      strings.Split(_in.path, _in.pattern)
-	_remainingPath:  _splitPath[1]
-	_versionPattern: "^/([^/]+)"
-	_match:          regexp.FindSubmatch(_versionPattern, _remainingPath)
-
-	data_version: _match[1]
-	...
-}
-
 #ProcessFiles: {
 	filepaths: [...string]
 	schema: _
 	output: [for filepath in filepaths
-		let ver = #GetVer & {_in: {pattern: "outputs", path: filepath}}
+		let ver = strings.SplitN(filepath, "/", -1)[5]
 		let name = path.Base(filepath)
 		if (schema & {filename: name}) != _|_ {
 			if list.Contains(schema.output_of, "hand") && regexp.FindAll(#catchmentid_filter, filepath, -1) != _|_ {
@@ -51,7 +37,7 @@ import (
 						filename:     name
 						huc:          hucstring
 						branch:       branchstring
-						data_version: ver.data_version
+						data_version: ver
 					}
 				}
 				if len(hucMatches) == 1 {
@@ -59,22 +45,17 @@ import (
 					schema & {
 						filename:     name
 						huc:          hucstring
-						data_version: ver.data_version
+						data_version: ver
 					}
 				}
+			}
+			if list.Contains(schema.output_of, "hand") {
 				schema & {
 					filename:     name
-					data_version: ver.data_version
+					data_version: ver
 				}
 			}
 			if list.Contains(schema.input_to, "eval") {
-				schema & {
-					filename: name
-				}
-			}
-
-			//added this condition for individual huc8 wbd data
-			if list.Contains(schema.data_roles, "model_boundary") {
 				schema & {
 					filename: name
 				}
@@ -88,41 +69,41 @@ _handRems: #ProcessFiles & {
 	schema:    #HandRem
 }
 
-// _hydroTables: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #HydroTable
-// }
+_hydroTables: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #HydroTable
+}
 
-// _reachRasters: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #ReachRaster
-// }
+_reachRasters: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #ReachRaster
+}
 
-// _reachAttributes: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #ReachAttributes
-// }
+_reachAttributes: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #ReachAttributes
+}
 
-// _huc8Shapes: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #Huc8Shape
-// }
+_huc8Shapes: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #Huc8Shape
+}
 
-// _hucBranchMaps: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #HucBranchMap
-// }
+_hucBranchMaps: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #HucBranchMap
+}
 
-// _vectorMasks: #ProcessFiles & {
-// 	filepaths: _evalpaths
-// 	schema:    #VectorMasks
-// }
+_vectorMasks: #ProcessFiles & {
+	filepaths: _evalpaths
+	schema:    #VectorMasks
+}
 
 // Output the processed files
-handRems: _handRems.output
-// hydroTables:     _hydroTables.output
-// reachRasters:    _reachRasters.output
-// reachAttributes: _reachAttributes.output
-// huc8Shapes:      _huc8Shapes.output
-// hucBranchMaps:   _hucBranchMaps.output
-// vectorMasks:     _vectorMasks.output
+handRems:        _handRems.output
+hydroTables:     _hydroTables.output
+reachRasters:    _reachRasters.output
+reachAttributes: _reachAttributes.output
+huc8Shapes:      _huc8Shapes.output
+hucBranchMaps:   _hucBranchMaps.output
+vectorMasks:     _vectorMasks.output

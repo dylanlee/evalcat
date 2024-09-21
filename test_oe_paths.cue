@@ -1,6 +1,10 @@
 package evalcat
 
 _evalpaths: [
+	"/efs/fim-data/hand_fim/inputs/hand_fim/inputs/nld_vectors/Levee_protected_areas.gpkg",
+	"/efs/fim-data/hand_fim/inputs/hand_fim/inputs/nwm_hydrofabric/nwm_lakes.gpkg",
+	"/efs/fim-data/hand_fim/inputs/hand_fim/inputs/wbd/WBD_National.gpkg",
+	"/efs/fim-data/hand_fim/outputs/PI3_fim60_10m_wbt/fim_inputs.csv",
 	"/efs/fim-data/hand_fim/outputs/PI3_fim60_10m_wbt/03180004/nwm_catchments_proj_subset_levelPaths.gpkg",
 	"/efs/fim-data/hand_fim/outputs/PI3_fim60_10m_wbt/03180004/hydrotable.csv",
 	"/efs/fim-data/hand_fim/outputs/PI3_fim60_10m_wbt/03180004/wbd.gpkg",

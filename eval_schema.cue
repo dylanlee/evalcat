@@ -11,8 +11,8 @@ _InsOuts: {
 	hand_out: string & "/efs/fim-data/hand_fim/outputs/"
 }
 
-// List of FIM output versions
-#FimVersions: string & "fim_4_4_0_0" | "PI3_fim60_10m_wbt" | *"fim_4_5_2_11"
+// List of FIM output versions. inputs isn't a version but is necessary to parse inputs for OE pathing
+#FimVersions: string & "fim_4_4_0_0" | "PI3_fim60_10m_wbt" | *"fim_4_5_2_11" | "inputs"
 
 // Benchmark sources
 #BenchmarkSources: string & "ble" | *"usgs" | "nws" | "hwm" | "gfm"
