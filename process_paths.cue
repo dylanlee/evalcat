@@ -5,6 +5,7 @@ import (
 	"path"
 	"regexp"
 	"math"
+    "list"
 )
 
 // Define batch parameters
@@ -32,24 +33,10 @@ pathsToProcess: _evalpaths[startIndex:endIndex]
 // generic output for your function outputs
 #Output: string
 
-#GetVer: {
-	_in:          #Input
-	data_version: #Output
-
-	// Intermediate fields
-	_splitPath:      strings.Split(_in.path, _in.pattern)
-	_remainingPath:  _splitPath[1]
-	_versionPattern: "^/([^/]+)"
-	_match:          regexp.FindSubmatch(_versionPattern, _remainingPath)
-
-	data_version: _match[1]
-	...
-}
-
 // Process HandRems
 handRems: [...] & [
 	for filepath in _pathsToProcess
-	let ver = #GetVer & {_in: {pattern: "outputs", path: filepath}}
+	let ver = strings.SplitN(filepath, "/", -1)[5]
 	let name = path.Base(filepath)
 	if (#HandRem & {filename: name}) != _|_ {
 		let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
@@ -61,6 +48,7 @@ handRems: [...] & [
 				huc:          hucstring
 				branch:       branchstring
 				data_version: ver.data_version
+		
 			}
 		}
 	},
@@ -68,7 +56,7 @@ handRems: [...] & [
 
 hydroTables: [...] & [
 	for filepath in _pathsToProcess
-	let ver = #GetVer & {_in: {pattern: "outputs", path: filepath}}
+	let ver = strings.SplitN(filepath, "/", -1)[5]
 	let name = path.Base(filepath)
 	if (#HydroTable & {filename: name}) != _|_ {
 		let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
@@ -81,32 +69,10 @@ hydroTables: [...] & [
 				branch:       branchstring
 				data_version: ver.data_version
 			}
-		}
-	},
-]
-
-reachRasters: [...] & [
-	for filepath in _pathsToProcess
-	let ver = #GetVer & {_in: {pattern: "outputs", path: filepath}}
-	let name = path.Base(filepath)
-	if (#ReachRaster & {filename: name}) != _|_ {
-		let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
-		if len(hucMatches) >= 2 {
-			let hucstring = strings.Split(hucMatches[0], "/")[1]
-			let branchstring = strings.Split(hucMatches[1], "/")[1]
-			#ReachRaster & {
-				filename:     name
-				huc:          hucstring
-				branch:       branchstring
-				data_version: ver.data_version
-			}
-		}
-	},
-]
 
 reachAttributes: [...] & [
 	for filepath in _pathsToProcess
-	let ver = #GetVer & {_in: {pattern: "outputs", path: filepath}}
+	let ver = strings.SplitN(filepath, "/", -1)[5]
 	let name = path.Base(filepath)
 	if (#ReachAttributes & {filename: name}) != _|_ {
 		let hucMatches = regexp.FindAll(#catchmentid_filter, filepath, -1)
@@ -122,3 +88,4 @@ reachAttributes: [...] & [
 		}
 	},
 ]
+
