@@ -4,11 +4,11 @@ import "path"
 
 import "time"
 
-// Top-level pathing
+// Top-level pathing. For OE local paths change "/efs/fim-data/hand_fim/inputs" to "data" since that is how it will be mounted in the OE docker environment and hand outputs prefix to "outputs"
 _InsOuts: {
 	eval_out: string & ""
-	hand_in:  string & "/efs/fim-data/hand_fim/inputs/"
-	hand_out: string & "/efs/fim-data/hand_fim/outputs/"
+	hand_in:  string & "/data/"
+	hand_out: string & "/outputs/"
 }
 
 // List of FIM output versions. inputs isn't a version but is necessary to parse inputs for OE pathing
@@ -103,7 +103,6 @@ _InsOuts: {
 	data_roles: ["mask"]
 	dir_path: path.Join([
 		_InsOuts.hand_in,
-		"inputs",
 		if filename == "Levee_protected_areas.gpkg" {
 			"nld_vectors"
 		},
@@ -119,7 +118,7 @@ _InsOuts: {
 	input_to: ["eval", "hand"]
 	output_of: []
 	data_roles: ["model_boundary"]
-	dir_path: path.Join([_InsOuts.hand_in, "inputs", "wbd"], path.Unix)
+	dir_path: path.Join([_InsOuts.hand_in, "wbd"], path.Unix)
 }
 
 // Metric CSV file
