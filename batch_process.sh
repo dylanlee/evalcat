@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# Set the batch size
-BATCH_SIZE=10000
+# Set the batch size. 1000 paths at a time is good.
+BATCH_SIZE=1000
+
+MAX_JOBS=20  # Set the maximum number of parallel jobs
+
+# Initialize job counter
+JOB_COUNT=0
 
 # Input paths file
 PATHS_FILE="./paths/OE_eval_cat_paths.txt"
@@ -48,6 +53,12 @@ do
         echo "Batch $BATCH_NUM processed."
 
     ) &
+
+    JOB_COUNT=$((JOB_COUNT + 1))
+    if [ "$JOB_COUNT" -ge "$MAX_JOBS" ]; then
+        wait  # Wait for background jobs to finish
+        JOB_COUNT=0
+    fi
 
     # Increment the batch counter
     BATCH_NUM=$((BATCH_NUM + 1))
