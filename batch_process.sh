@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the batch size
-BATCH_SIZE=1000
+BATCH_SIZE=10000
 
 # Input paths file
-PATHS_FILE="./paths/test_oe_paths.txt"
+PATHS_FILE="./paths/OE_eval_cat_paths.txt"
 
 # Ensure the output directory exists
 mkdir -p output
@@ -34,8 +34,7 @@ do
         } > "$TEMP_CUE_FILE"
 
         # Run cue export with the batch paths
-        cue export eval_schema.cue process_paths.cue "$TEMP_CUE_FILE" -e handRems > "output/handRems_batch$BATCH_NUM.json"
-        cue export eval_schema.cue process_paths.cue "$TEMP_CUE_FILE" -e hydroTables > "output/hydroTables_batch$BATCH_NUM.json"
+        cue export eval_schema.cue process_paths.cue "$TEMP_CUE_FILE" > "output/batch$BATCH_NUM.json"
 
         # Check for errors
         if [ $? -ne 0 ]; then
@@ -59,11 +58,17 @@ wait
 
 # Step 3: Combine the batch outputs
 echo "Combining batch outputs..."
-jq -s 'add' output/handRems_batch*.json > output/handRems_combined.json
+jq -s 'reduce .[] as $item ({}; 
+    . as $accum | 
+    reduce ($item | keys_unsorted[]) as $key (
+        $accum; 
+        .[$key] = (.[$key] // []) + $item[$key]
+    )
+)' output/batch*.json > output/eval_cat.json
 
 # Step 4: Clean up intermediate files
 echo "Cleaning up intermediate files..."
-rm output/handRems_batch*.json
+rm output/batch*.json
 rm batch_paths_*
 
-echo "Processing complete. Output is in output/handRems_combined.json"
+echo "Processing complete. Output is in output/eval_cat.json"
